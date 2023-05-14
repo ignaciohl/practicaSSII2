@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Últimas 10 vulnerabilidades</title>
+</head>
+<body>
+	<h1>Últimas 10 vulnerabilidades:</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Nombre</th>
+				<th>Prerrequisitos</th>
+				<th>Debilidades relacionadas</th>
+				<th>Soluciones</th>
+				<th>Resumen</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for vuln in resultados %}
+			<tr>
+				<td>{{ vuln['id'] }}</td>
+				<td>{{ vuln['name'] }}</td>
+				<td>{{ vuln['prerequisites'] }}</td>
+				<td>{{ vuln['related_weakness'] }}</td>
+				<td>{{ vuln['solutions'] }}</td>
+				<td>{{ vuln['summary'] }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body>
+</html>

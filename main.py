@@ -2,6 +2,7 @@ import sqlite3
 import json
 import pandas as pd
 from flask import *
+import requests
 
 
 #Conectar la bd creada con sqlite
@@ -94,6 +95,14 @@ def dangerous():
         resultados2 = cur.fetchall()
         return render_template("dangerous.html", num=num, resultados1=resultados1,resultados2=resultados2, type_dangerous_devices=tipo)
 
+@app.route("/vulnerabilities")
+def vulnerabilities():
+    con = sqlite3.connect("practica.db")
+    cur = con.cursor()
+    vuln=requests.get('https://cve.circl.lu/api/last')
+    resultados = vuln.json()[:10]
+    print(resultados)
+    return render_template('vulnerabilities.html', resultados=resultados)
 
 if __name__ == '__main__':
     app.run()
