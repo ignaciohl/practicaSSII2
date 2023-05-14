@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Top {{ num }} IPs mas problematicas</title>
+</head>
+<body>
+	<h1>Top {{ num }} IPs mas problematicas:</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Origen</th>
+				<th></th>
+				<th>Numero de alertas</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for ip in resultados %}
+			<tr>
+				<td>{{ ip[0] }}</td>
+				<td></td>
+				<td>{{ ip[1] }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body>
+</html>

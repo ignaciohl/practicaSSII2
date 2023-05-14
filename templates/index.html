@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de datos</title>
+</head>
+<body>
+    <h1>Consulta de datos</h1>
+    <form method="get" action="/ip">
+        <h2>Top IPs</h2>
+        <label for="number_ips">Número de IPs a consultar:</label>
+        <input type="text" name="number_ips" id="number_ips">
+        <input type="submit" value="Submit">
+    </form>
+
+    <form method="get" action="/devices">
+        <h2>Top dispositivos más vulnerables</h2>
+        <label for="number_devices">Número de dispositivos a consultar:</label>
+        <input type="text" name="number_devices" id="number_devices">
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
