@@ -76,6 +76,25 @@ def devices():
     resultados = cur.fetchall()
     return render_template("devices.html", num=num, resultados=resultados)
 
+@app.route("/dangerous")
+def dangerous():
+    con = sqlite3.connect("practica.db")
+    cur = con.cursor()
+    num = request.args.get("number_dangerous_devices")
+    tipo = request.args.get("type_dangerous_devices")
+    if tipo=='more':
+        cur.execute("SELECT DISTINCT d.id FROM devices d JOIN analisis a ON d.analisis_id = a.id WHERE a.servicios_inseguros / a.servicios > 0.33 LIMIT ?",(num,))
+        resultados = cur.fetchall()
+        print(resultados)
+        return render_template("dangerous.html",num=num,resultados=resultados,type_dangerous_devices=tipo)
+    else:
+        cur.execute("SELECT DISTINCT d.id FROM devices d JOIN analisis a ON d.analisis_id = a.id WHERE a.servicios_inseguros / a.servicios < 0.33 LIMIT ?",(num,))
+        resultados1 = cur.fetchall()
+        cur.execute("SELECT DISTINCT d.id FROM devices d JOIN analisis a ON d.analisis_id = a.id WHERE a.servicios_inseguros / a.servicios > 0.33 LIMIT ?",(num,))
+        resultados2 = cur.fetchall()
+        return render_template("dangerous.html", num=num, resultados1=resultados1,resultados2=resultados2, type_dangerous_devices=tipo)
+
+
 if __name__ == '__main__':
     app.run()
 

@@ -19,5 +19,19 @@
         <input type="text" name="number_devices" id="number_devices">
         <input type="submit" value="Submit">
     </form>
+
+    <form method="get" action="/dangerous">
+        <h2>Top dispositivos más peligrosos</h2>
+        <label for="number_dangerous_devices">Número de dispositivos a consultar:</label>
+        <input type="text" name="number_dangerous_devices" id="number_dangerous_devices">
+        <br><br>
+        <label for="type_dangerous_devices">Tipo de dispositivos más peligrosos:</label>
+        <select name="type_dangerous_devices" id="type_dangerous_devices">
+            <option value="more">Solo más del 33% de servicios inseguros</option>
+            <option value="less">Más del 33% y menos del 33% de servicios inseguros</option>
+        </select>
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
