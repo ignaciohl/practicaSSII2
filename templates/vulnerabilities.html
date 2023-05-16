@@ -8,22 +8,30 @@
 	<table>
 		<thead>
 			<tr>
-				<th>Id</th>
-				<th>Nombre</th>
-				<th>Prerrequisitos</th>
-				<th>Debilidades relacionadas</th>
-				<th>Soluciones</th>
+				<th>Modificado</th>
+				<th>Publicado</th>
+				<th>Responsable</th>
+				<th>CWE</th>
+				<th>ID</th>
+				<th>Referencias</th>
 				<th>Resumen</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for vuln in resultados %}
 			<tr>
+				<td>{{ vuln['Modified'] }}</td>
+				<td>{{ vuln['Published'] }}</td>
+				<td>{{ vuln['assigner'] }}</td>
+				<td>{{ vuln['cwe'] }}</td>
 				<td>{{ vuln['id'] }}</td>
-				<td>{{ vuln['name'] }}</td>
-				<td>{{ vuln['prerequisites'] }}</td>
-				<td>{{ vuln['related_weakness'] }}</td>
-				<td>{{ vuln['solutions'] }}</td>
+				<td>
+					<ul>
+						{% for reference in vuln['references'] %}
+						<li>{{ reference }}</li>
+						{% endfor %}
+					</ul>
+				</td>
 				<td>{{ vuln['summary'] }}</td>
 			</tr>
 			{% endfor %}
