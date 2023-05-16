@@ -97,11 +97,8 @@ def dangerous():
 
 @app.route("/vulnerabilities")
 def vulnerabilities():
-    con = sqlite3.connect("practica.db")
-    cur = con.cursor()
     vuln=requests.get('https://cve.circl.lu/api/last')
     resultados = vuln.json()[:10]
-    print(resultados)
     return render_template('vulnerabilities.html', resultados=resultados)
 
 if __name__ == '__main__':
