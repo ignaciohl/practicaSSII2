@@ -54,7 +54,8 @@ cur.execute("INSERT INTO devices VALUES('dhcp_server', '172.1.0.1', 'Madrid','ad
 cur.execute("INSERT INTO devices VALUES('mysql_db', '172.18.0.1', 'None','admin', 6)")
 cur.execute("INSERT INTO devices VALUES('ELK', '172.18.0.2', 'None','admin', 7)")
 
-
+cur.close()
+con.close()
 app= Flask(__name__)
 
 @app.route("/")
@@ -104,17 +105,20 @@ def vulnerabilities():
     return render_template('vulnerabilities.html', resultados=resultados)
 
 def generate_hash(password):
-    randomSalt = 'random_salt'
-    password = randomSalt + password
+    salt = 'random_salt'
+    password = salt + password
     hash_object = hashlib.sha256(password.encode())
     return hash_object.hexdigest()
 def store_password(username,password):
     con = sqlite3.connect("practica.db")
     cur = con.cursor()
     hashed_pass = generate_hash(password)
-    cur.execute("INSERT INTO users VALUES(?, ?)", (username, hashed_pass))
+    print("casi")
+    cur.execute("INSERT INTO users (username, password) VALUES(?, ?)", (username, hashed_pass))
     print("insertado!!")
     con.commit()
+    cur.close()
+    con.close()
 
 
 @app.route("/login", methods=["GET","POST"])
@@ -133,6 +137,7 @@ def login():
         cur.execute("SELECT password FROM users WHERE username=?", (fl.request.form['username'],))
         result = cur.fetchone()
         print(result)
+        con.close()
         if result is not None:
             stored_hash = result[0]
             if stored_hash == hashed_password:
@@ -146,13 +151,13 @@ def login():
 @app.route("/signup",methods = ['GET','POST'])
 def signup():
     if request.method == "POST":
-
-        username = fl.request.form['username']
-        password = fl.request.form['password']
-        store_password(username,password)
-        print("hasta aquí")
+        if fl.request.form['username'].strip() and fl.request.form['password']:
+            username = fl.request.form['username']
+            password = fl.request.form['password']
+            store_password(username,password)
+            print("hasta aquí")
         #cur.commit()
-        return redirect("/login")
+            return redirect("/login")
     return render_template("signup.html")
 
 if __name__ == '__main__':
