@@ -58,7 +58,7 @@ cur.close()
 con.close()
 app= Flask(__name__)
 
-@app.route("/")
+@app.route("/index")
 def index():
     return render_template("index.html")
 
@@ -113,30 +113,23 @@ def store_password(username,password):
     con = sqlite3.connect("practica.db")
     cur = con.cursor()
     hashed_pass = generate_hash(password)
-    print("casi")
     cur.execute("INSERT INTO users (username, password) VALUES(?, ?)", (username, hashed_pass))
-    print("insertado!!")
+
     con.commit()
     cur.close()
     con.close()
 
 
-@app.route("/login", methods=["GET","POST"])
+@app.route("/", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         con = sqlite3.connect("practica.db")
         cur = con.cursor()
-        #if flask.request.form['username'].strip() and flask.request.form['password']:
-           # user = flask.request.form['username']
-          #  password = flask.request.form['password']
-         #   return render_template("/")
-        #else:
-         #   user = None
-        #    return render_template("login.html")
+
         hashed_password = generate_hash(fl.request.form['password'])
         cur.execute("SELECT password FROM users WHERE username=?", (fl.request.form['username'],))
         result = cur.fetchone()
-        print(result)
+
         con.close()
         if result is not None:
             stored_hash = result[0]
@@ -157,7 +150,7 @@ def signup():
             store_password(username,password)
             print("hasta aquí")
         #cur.commit()
-            return redirect("/login")
+            return redirect("/")
     return render_template("signup.html")
 
 if __name__ == '__main__':
