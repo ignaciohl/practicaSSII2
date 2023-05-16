@@ -3,11 +3,12 @@ import json
 import pandas as pd
 from flask import *
 import requests
+import hashlib
+import flask as fl
 
 
 #Conectar la bd creada con sqlite
 con= sqlite3.connect('practica.db')
-
 #Leer datos proporcionados (fase de extracción)
 df_alertas= pd.read_csv('alerts.csv')
 d= open("devices.json")
@@ -21,6 +22,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS responsable(nombre TEXT PRIMARY_KEY, tel
 cur.execute("CREATE TABLE IF NOT EXISTS analisis(id TEXT PRIMARY_KEY, puertos_abiertos TEXT, numPuertosAbiertos TEXT, servicios TEXT, servicios_inseguros TEXT, vulnerabilidades_detectadas INTEGER)")
 cur.execute("CREATE TABLE IF NOT EXISTS devices(id TEXT, ip TEXT, localizacion TEXT,responsable_id TEXT, analisis_id TEXT, FOREIGN KEY(responsable_id) REFERENCES responsable(nombre), FOREIGN KEY(analisis_id) REFERENCES analisis(id))")
 cur.execute("CREATE TABLE IF NOT EXISTS alerts(timestamp TEXT, sid TEXT, msg TEXT,clasificacion TEXT, prioridad TEXT, protocolo TEXT, origen TEXT, destino TEXT, puerto TEXT  )")
+cur.execute("CREATE TABLE IF NOT EXISTS users(username TEXT, password TEXT)")
 
 #Datos tabla alerts
 df_alertas.to_sql('alerts',con,if_exists='replace',index=False)
@@ -100,6 +102,58 @@ def vulnerabilities():
     vuln=requests.get('https://cve.circl.lu/api/last')
     resultados = vuln.json()[:10]
     return render_template('vulnerabilities.html', resultados=resultados)
+
+def generate_hash(password):
+    randomSalt = 'random_salt'
+    password = randomSalt + password
+    hash_object = hashlib.sha256(password.encode())
+    return hash_object.hexdigest()
+def store_password(username,password):
+    con = sqlite3.connect("practica.db")
+    cur = con.cursor()
+    hashed_pass = generate_hash(password)
+    cur.execute("INSERT INTO users VALUES(?, ?)", (username, hashed_pass))
+    print("insertado!!")
+    con.commit()
+
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+    if request.method == "POST":
+        con = sqlite3.connect("practica.db")
+        cur = con.cursor()
+        #if flask.request.form['username'].strip() and flask.request.form['password']:
+           # user = flask.request.form['username']
+          #  password = flask.request.form['password']
+         #   return render_template("/")
+        #else:
+         #   user = None
+        #    return render_template("login.html")
+        hashed_password = generate_hash(fl.request.form['password'])
+        cur.execute("SELECT password FROM users WHERE username=?", (fl.request.form['username'],))
+        result = cur.fetchone()
+        print(result)
+        if result is not None:
+            stored_hash = result[0]
+            if stored_hash == hashed_password:
+                return render_template("index.html")
+            else:
+                return render_template("login.html")
+        else:
+            return redirect("/signup")
+    return render_template("login.html")
+
+@app.route("/signup",methods = ['GET','POST'])
+def signup():
+    if request.method == "POST":
+
+        username = fl.request.form['username']
+        password = fl.request.form['password']
+        store_password(username,password)
+        print("hasta aquí")
+        #cur.commit()
+        return redirect("/login")
+    return render_template("signup.html")
 
 if __name__ == '__main__':
     app.run()
